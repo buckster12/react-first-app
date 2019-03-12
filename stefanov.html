@@ -18,14 +18,21 @@
     ReactDOM.render(
         ReactDOMFactories.h1({
                 'id': 'test',
-                'className': 'my_class'
+                style: {
+                    background: '#cfcfcf',
+                    fontFamily: 'arial',
+                    fontSize: '32px',
+                    color: '#920fcf'
+                }
+                // 'className': 'my_class'
             },
             'test',
-            ReactDOMFactories.span(null, 'span text', ReactDOMFactories.em(null, 'span text'),
-            ),
+            // ReactDOMFactories.span(null, 'span text', ReactDOMFactories.em(null, 'span text'),
         ),
+        // ),
         document.getElementById('root')
-    );
+    )
+    ;
 
 </script>
 <!--
