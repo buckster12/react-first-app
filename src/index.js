@@ -6,13 +6,6 @@ import * as serviceWorker from './serviceWorker';
 
 
 class MyComponent extends Component {
-    // static propTypes = {
-    //     name:
-    // }
-
-
-    // const
-    // name = 'noname';
 
     static defaultProps = {
         text: ''
@@ -21,8 +14,6 @@ class MyComponent extends Component {
     constructor(props) {
         super(props);
 
-        // this.props.name = 'noname';
-        // this.makeNoise = this.makeNoise.bind(this);
         this.countChars = this.countChars.bind(this);
 
         this.state = {
@@ -43,18 +34,39 @@ class MyComponent extends Component {
     // limit message to 5 chars
     componentDidUpdate(prevProps: Readonly<P>, prevState: Readonly<S>, snapshot: SS): void {
         if (this.state.text.length > 5) {
-            console.log('text has more than 5 chars');
             this.setState(prevState);
         }
     }
 
     render() {
+        var counter = null;
+        if (this.state.text.length > 0) {
+            counter = <Counter count={this.state.text.length} />
+        }
         return (
             <div>
-                <textarea onChange={this.countChars} defaultValue={this.props.text} name="" id="" cols="30" rows="10"></textarea>
+                <textarea onChange={this.countChars} defaultValue={this.props.text} name="" id="" cols="30"
+                          rows="10"></textarea>
                 <h3>{this.state.text}</h3>
-                <h3>{this.state.text.length}</h3>
+                {counter}
             </div>
+        )
+    }
+}
+
+class Counter extends Component {
+    static defaultProps = {
+        count: 0,
+    };
+
+    shouldComponentUpdate(nextProps: Readonly<P>, nextState: Readonly<S>, nextContext: any): boolean {
+        console.log(nextProps);
+        return false;
+    }
+
+    render(): React.ReactNode {
+        return (
+            <h3>{this.props.count}</h3>
         )
     }
 }
