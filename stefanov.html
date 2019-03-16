@@ -12,34 +12,25 @@
     <!--<script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>-->
 </head>
 <body>
-<div id="root"></div>
-<script type="text/babel">
-    import React, { Component } from 'react';
+<div id="root">
+    <button id="test1">test1</button>
+    <button id="test2">test2</button>
+</div>
 
-    class MyComponent extends Component {
-        constructor(props) {
-            super(props);
+<script>
+    document.getElementById('root').addEventListener('click', function (e) {
+        var button = e.target;
+        // console.log(button);
+        switch (button.id) {
+            case 'test1':
+                console.log('ok');
+                break;
+
+            default:
+                new Error('Unknown id');
+                console.log('unknown id');
         }
-        render() {
-            return (
-                <div>
-                    <h1>test</h1>
-                </div>
-            )
-        }
-    }
-
-    // Component = React.createClass({
-    //     render: function () {
-    //         return ReactDOMFactories.span(null, 'test');
-    //     }
-    // });
-
-    ReactDOM.render(
-        ReactDOMFactories.h1('sdf'),
-        document.getElementById('root')
-    );
-
+    });
 </script>
 <!--
   Note: this page is a great way to try React but it's not suitable for production.

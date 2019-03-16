@@ -18,23 +18,15 @@ class MyComponent extends Component {
         text: ''
     };
 
-    // static defaultState = {
-    //     name: 'n/a'
-    // };
-
     constructor(props) {
         super(props);
 
-        // this.setState({
-            // name: '11'
-        // });
-
         // this.props.name = 'noname';
-        this.makeNoise = this.makeNoise.bind(this);
+        // this.makeNoise = this.makeNoise.bind(this);
         this.countChars = this.countChars.bind(this);
 
         this.state = {
-            text: '',
+            text: this.props.text,
         }
     }
 
@@ -48,10 +40,19 @@ class MyComponent extends Component {
         })
     }
 
+    // limit message to 5 chars
+    componentDidUpdate(prevProps: Readonly<P>, prevState: Readonly<S>, snapshot: SS): void {
+        if (this.state.text.length > 5) {
+            console.log('text has more than 5 chars');
+            this.setState(prevState);
+        }
+    }
+
     render() {
         return (
             <div>
                 <textarea onChange={this.countChars} defaultValue={this.props.text} name="" id="" cols="30" rows="10"></textarea>
+                <h3>{this.state.text}</h3>
                 <h3>{this.state.text.length}</h3>
             </div>
         )
