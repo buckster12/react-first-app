@@ -24,8 +24,11 @@ var data = [
 class Excel extends Component {
     constructor(props) {
         super(props);
+
         this.state = {
-            data: data
+            data: data,
+            sortby: null,
+            descending: false,
         };
 
         this._sort = this._sort.bind(this);
@@ -39,10 +42,17 @@ class Excel extends Component {
     _sort(e) {
         var column = e.target.cellIndex;
         var data = this.state.data.slice();
-        // var data = Array.from(this.state.data);
+        var descending = this.state.sortby === column && !this.state.descending;
 
         console.log(column);
 
+        data.sort(function (a, b) {
+            return descending
+                ? (a[column] < b[column] ? 1 : -1)
+                : (a[column] > b[column] ? 1 : -1);
+        });
+
+        /*
         // sort by integer
         if (column == 4) {
             console.log('sort by integer')
@@ -64,15 +74,15 @@ class Excel extends Component {
                 // return a[column] < b[column] ? -1 : 1;
             });
         }
+        */
 
-        console.log(data);
-
+        console.log(this.state.descending);
 
         this.setState({
-            data: data
+            data: data,
+            sortby: column,
+            descending: descending
         });
-
-        // console.log(column)
     }
 
     render(): React.ReactNode {
@@ -80,8 +90,11 @@ class Excel extends Component {
             <table>
                 <thead>
                 <tr onClick={this._sort}>
-                    {this.props.headers.map(function (title, key) {
-                        return <th key={key}>{title}</th>
+                    {this.props.headers.map((title, idx) => {
+                        if (this.state.sortby === idx) {
+                            title += this.state.descending ? '\u2191' : '\u2193';
+                        }
+                        return <th key={idx}>{title}</th>
                     })}
                 </tr>
                 </thead>
