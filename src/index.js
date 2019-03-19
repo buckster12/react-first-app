@@ -27,11 +27,14 @@ class Excel extends Component {
 
         this.state = {
             data: data,
+            edit: null,
             sortby: null,
             descending: false,
         };
 
         this._sort = this._sort.bind(this);
+        this._save = this._save.bind(this);
+        this._showEditor = this._showEditor.bind(this);
     }
 
     static defaultProps = {
@@ -81,9 +84,31 @@ class Excel extends Component {
         this.setState({
             data: data,
             sortby: column,
-            descending: descending
+            descending: descending,
+            edit: null,
         });
     }
+
+    _showEditor(e) {
+        this.setState({
+            edit: {
+                row: parseInt(e.target.dataset.row, 10),
+                cell: e.target.cellIndex,
+            }
+        });
+        console.log(this.state);
+    };
+
+    _save(e) {
+        e.preventDefault();
+        var input = e.target.firstChild;
+        var data = this.state.data.slice();
+        data[this.state.edit.row][this.state.edit.cell] = input.value;
+        this.setState({
+            edit: null,
+            data: data,
+        });
+    };
 
     render(): React.ReactNode {
         return (
@@ -98,18 +123,30 @@ class Excel extends Component {
                     })}
                 </tr>
                 </thead>
-                <tbody>
-                {this.state.data.map(function (row, idx) {
-                    return (
-                        <tr key={idx}>
-                            {
-                                row.map(function (cell, idx) {
-                                    return <td key={idx}>{cell}</td>
-                                })
-                            }
-                        </tr>
-                    )
-                })}
+                <tbody onDoubleClick={this._showEditor}>
+                {this.state.data.map((row, rowidx) => {
+                        return (
+                            <tr key={rowidx}>
+                                {
+                                    row.map((cell, idx) => {
+                                        var content = cell;
+
+                                        var edit = this.state.edit;
+                                        if (edit && edit.row === rowidx && edit.cell === idx) {
+                                            content = (
+                                                <form onSubmit={this._save}>
+                                                    <input type="text" defaultValue={content}/>
+                                                </form>
+                                            )
+                                        }
+
+                                        return <td data-row={rowidx} key={idx}>{content}</td>
+                                    })
+                                }
+                            </tr>
+                        )
+                    }
+                )}
                 </tbody>
             </table>
         )
