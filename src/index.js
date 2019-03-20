@@ -22,6 +22,9 @@ var data = [
 ];
 
 class Excel extends Component {
+
+    _preSearchData: null;
+
     constructor(props) {
         super(props);
 
@@ -35,6 +38,8 @@ class Excel extends Component {
         this._sort = this._sort.bind(this);
         this._save = this._save.bind(this);
         this._showEditor = this._showEditor.bind(this);
+        this._toggleSearch = this._toggleSearch.bind(this);
+        this._search = this._search.bind(this);
     }
 
     static defaultProps = {
@@ -55,30 +60,6 @@ class Excel extends Component {
                 : (a[column] > b[column] ? 1 : -1);
         });
 
-        /*
-        // sort by integer
-        if (column == 4) {
-            console.log('sort by integer')
-
-            data.sort(function (a, b) {
-                if (a[column] === b[column]) return 0;
-                return parseInt(a[column]) < parseInt(b[column]) ? -1 : 1;
-            })
-        } else {
-
-            data.sort(function (a, b) {
-                if (a[column] < b[column]) {
-                    return -1
-                }
-                if (a[column] > b[column]) {
-                    return 1
-                }
-                return 0
-                // return a[column] < b[column] ? -1 : 1;
-            });
-        }
-        */
-
         console.log(this.state.descending);
 
         this.setState({
@@ -86,6 +67,7 @@ class Excel extends Component {
             sortby: column,
             descending: descending,
             edit: null,
+            search: false,
         });
     }
 
@@ -110,7 +92,7 @@ class Excel extends Component {
         });
     };
 
-    render(): React.ReactNode {
+    _renderTable(e) {
         return (
             <table>
                 <thead>
@@ -124,6 +106,9 @@ class Excel extends Component {
                 </tr>
                 </thead>
                 <tbody onDoubleClick={this._showEditor}>
+
+                {this._renderSearch()}
+
                 {this.state.data.map((row, rowidx) => {
                         return (
                             <tr key={rowidx}>
@@ -150,6 +135,76 @@ class Excel extends Component {
                 </tbody>
             </table>
         )
+    }
+
+    _toggleSearch(e) {
+        if (this.state.search) {
+            this.setState({
+                data: this._preSearchData,
+                search: false,
+            });
+            this._preSearchData = null;
+        } else {
+            this._preSearchData = this.state.data;
+            this.setState({
+                search: true,
+            })
+        }
+
+        this.setState({
+            search: !this.state.search,
+        })
+    }
+
+    _search(e) {
+        var needle = e.target.value.toLowerCase();
+        if (!needle) {
+            this.setState({
+                data: this._preSearchData
+            });
+            return;
+        }
+        var idx = e.target.dataset.idx;
+        var searchdata = this._preSearchData.filter(function (row) {
+            return row[idx].toString().toLowerCase().indexOf(needle) > -1;
+        });
+        this.setState({
+            data: searchdata,
+        });
+    }
+
+    _renderSearch() {
+        if (!this.state.search) {
+            return null;
+        }
+
+        return (
+            <tr onChange={this._search}>
+                {this.props.headers.map((_ignore, idx) => {
+                        return <td key={idx}>
+                            <input type="text" data-idx={idx}/>
+                        </td>
+                    }
+                )}
+            </tr>
+        )
+    }
+
+    _renderToolbar() {
+        return (
+            <button onClick={this._toggleSearch} className='toolbar'>search</button>
+        )
+    }
+
+    render() {
+        return (
+            React.createElement("div",
+                null,
+                this._renderToolbar(),
+                this._renderTable(),
+            )
+        )
+
     }
 }
 
